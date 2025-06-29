@@ -3,8 +3,9 @@
 ### Irfan (Programmer)
 - [x] Buat GitHub repo
 - [x] Invite tim
-- [ ] Buat script `PlayerMovement.cs`
-- [ ] Buat script `SceneChanger.cs`
+- [X] Buat script `PlayerMovement.cs`
+- [X] Buat script `SceneChanger.cs`
+- [X] Buat Script untuk ganti scene/level
 
 ### Yudha (Game Designer)
 - [ ] ....
