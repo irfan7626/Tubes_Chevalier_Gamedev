@@ -2100,12 +2100,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkingSpeed: 2
   runningSpeed: 5
+  crouchSpeed: 1.3
   jumpSpeed: 8
   gravity: 20
   playerCamera: {fileID: 330585545}
   lookSpeed: 2
   lookXLimit: 80
   canMove: 1
+  crouchHeight: 1
+  standingHeight: 2
+  cameraStandingPos: {x: 0, y: 0, z: 0}
+  cameraCrouchPos: {x: 0, y: 0, z: 0}
 --- !u!143 &1222316874
 CharacterController:
   m_ObjectHideFlags: 0
