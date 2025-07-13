@@ -50,11 +50,18 @@ public class ItemPickup : MonoBehaviour
                 heldItem.transform.position = holdParent.position;
                 heldItem.transform.SetParent(holdParent);
 
-                // PERBAIKAN: Ambil data dari item yang di-pick up, bukan dari script ini
+                // Ambil ikon dan tambahkan ke UI inventory jika item puzzle
                 ItemPickup itemScript = hit.transform.GetComponent<ItemPickup>();
                 if (itemScript != null && itemScript.isPuzzleItem && itemScript.itemIcon != null)
                 {
                     InventoryManager.Instance.AddItem(itemScript.itemIcon);
+                }
+
+                // Jika item adalah kunci, tambahkan ke sistem kunci
+                KeyItem key = hit.transform.GetComponent<KeyItem>();
+                if (key != null)
+                {
+                    InventoryManager.Instance.AddKey(key.keyID);
                 }
             }
         }

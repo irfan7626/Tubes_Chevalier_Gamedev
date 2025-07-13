@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class InteractObject : MonoBehaviour
 {
-    public GameObject objectToActivate; // Objek yang akan diaktifkan/dinonaktifkan
+    public GameObject objectToActivate;  // Objek yang diaktifkan saat E ditekan
+    public GameObject promptUI;          // UI yang muncul saat player dekat
     private bool isPlayerNear = false;
 
     void Update()
@@ -11,32 +12,35 @@ public class InteractObject : MonoBehaviour
         {
             if (objectToActivate != null)
             {
-                objectToActivate.SetActive(!objectToActivate.activeSelf); // Toggle ON/OFF
+                objectToActivate.SetActive(!objectToActivate.activeSelf);
+                Debug.Log("Interacted with object!");
 
                 // Sembunyikan UI setelah interaksi
-                InteractionUI.Instance.ShowPrompt(false);
-
-                // Reset agar interaksi tidak bisa diulang terus-menerus
-                isPlayerNear = false;
+                if (promptUI != null)
+                    promptUI.SetActive(false);
             }
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerNear = true;
-            InteractionUI.Instance.ShowPrompt(true); // Tampilkan UI interaksi
+
+            if (promptUI != null)
+                promptUI.SetActive(true);
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerNear = false;
-            InteractionUI.Instance.ShowPrompt(false); // Sembunyikan UI saat keluar
+
+            if (promptUI != null)
+                promptUI.SetActive(false);
         }
     }
 }
