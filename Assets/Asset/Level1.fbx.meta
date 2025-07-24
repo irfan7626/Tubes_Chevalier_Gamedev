@@ -8,27 +8,27 @@ ModelImporter:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: Box
-    second: {fileID: 2800000, guid: f4e938bbb25545f42a33891667e53a87, type: 3}
+    second: {fileID: 2800000, guid: c84f3027c9aa5f346b9b24f928ec12b5, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: Door
-    second: {fileID: 2800000, guid: 66f6605b8c5e21249b0821d386e6102c, type: 3}
+    second: {fileID: 2800000, guid: ddfec7ace5415e74ebd7991f07b8fd19, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: Room
-    second: {fileID: 2800000, guid: 117f75fd6269f02449c84e1fcb6b7cb5, type: 3}
+    second: {fileID: 2800000, guid: c5e55e1c03cf6e4419cde1f8be5c1cfd, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: 'beri efek suram dan '
-    second: {fileID: 2800000, guid: 885d1e8cedc1e924b96ac609483ad6cc, type: 3}
+    second: {fileID: 2800000, guid: d8251da824dec124b8bb2717977d3ebe, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: bingkai
-    second: {fileID: 2800000, guid: 83ec76b0ef37c2646852ca6947f4a38b, type: 3}
+    second: {fileID: 2800000, guid: 85d00931b8e19d747841815dc118dbef, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
