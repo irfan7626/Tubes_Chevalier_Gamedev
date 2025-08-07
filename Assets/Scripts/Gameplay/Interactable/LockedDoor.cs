@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class LockedDoor : MonoBehaviour
 {
-    public string requiredKeyID = "KeyA";
-    public GameObject doorClosed;
-    public GameObject doorOpened;
+    [Header("Door Models")]
+    public GameObject doorClosed; // Model pintu tertutup
+    public GameObject doorOpened; // Model pintu terbuka
+
+    [Header("Lock Settings")]
+    public bool isLocked; // <-- CENTANG INI JIKA PINTU TERKUNCI
+    public string requiredKeyID; // ID kunci jika isLocked = true
+
+    [Header("UI & Sound")]
     public GameObject interactionUI;
     public AudioSource openSound;
 
@@ -13,35 +19,50 @@ public class LockedDoor : MonoBehaviour
 
     void Update()
     {
-        if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerNear && !doorIsOpen && Input.GetKeyDown(KeyCode.E))
         {
-            if (InventoryManager.Instance.HasKey(requiredKeyID) && !doorIsOpen)
+            // Cek apakah pintu ini tipenya terkunci
+            if (isLocked)
             {
-                OpenDoor();
+                // Jika terkunci, cek apakah pemain punya kunci
+                if (InventoryManager.Instance.HasKey(requiredKeyID))
+                {
+                    OpenDoor();
+                }
+                else
+                {
+                    Debug.Log("Pintu ini terkunci. Butuh kunci: " + requiredKeyID);
+                }
             }
-            else if (!doorIsOpen)
+            else
             {
-                Debug.Log("Kunci tidak ditemukan di inventory.");
+                // Jika tidak terkunci, langsung buka pintu
+                OpenDoor();
             }
         }
     }
 
     private void OpenDoor()
     {
-        // --- PERUBAHAN: Hapus kunci dari inventory setelah pintu dibuka ---
-        InventoryManager.Instance.RemoveKey(requiredKeyID);
+        doorIsOpen = true;
 
+        // Hapus kunci dari inventory HANYA jika pintu tadinya terkunci
+        if (isLocked)
+        {
+            InventoryManager.Instance.RemoveKey(requiredKeyID);
+        }
+
+        // Logika lama Anda untuk menukar model pintu (sudah benar)
         if (doorClosed != null) doorClosed.SetActive(false);
         if (doorOpened != null) doorOpened.SetActive(true);
         if (interactionUI != null) interactionUI.SetActive(false);
-
         if (openSound != null) openSound.Play();
 
-        doorIsOpen = true;
-        // Nonaktifkan trigger agar tidak menampilkan UI lagi
+        // Nonaktifkan collider agar tidak bisa diinteraksi lagi
         GetComponent<Collider>().enabled = false;
     }
 
+    // Bagian OnTriggerEnter dan OnTriggerExit tetap sama seperti milik Anda
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
