@@ -1,19 +1,12 @@
 using UnityEngine;
-using TMPro; // Jangan lupa tambahkan ini untuk TextMeshPro
+using TMPro; // Jangan lupa tambahkan ini jika memakai TextMeshPro
 
 public class MazeTimer : MonoBehaviour
 {
-    public float timeRemaining = 180; // Waktu dalam detik, misal 180 detik = 3 menit
+    public float timeRemaining = 180; // Waktu dalam detik
     public bool timerIsRunning = false;
 
     public TMP_Text timerText; // Seret objek UI Text-mu ke sini di Inspector
-
-    void Start()
-    {
-        // Contoh: Timer akan mulai saat pemain masuk ke area maze
-        // Untuk sekarang kita set true untuk tes
-        // timerIsRunning = true; 
-    }
 
     void Update()
     {
@@ -29,15 +22,14 @@ public class MazeTimer : MonoBehaviour
                 Debug.Log("Waktu Habis!");
                 timeRemaining = 0;
                 timerIsRunning = false;
-                // Di sini kamu bisa memanggil fungsi Game Over
+                // Di sini Anda bisa memanggil fungsi Game Over
             }
         }
     }
 
     void DisplayTime(float timeToDisplay)
     {
-        timeToDisplay += 1; // Agar tidak langsung ke detik sebelumnya
-
+        timeToDisplay = Mathf.Max(0, timeToDisplay); // Pastikan waktu tidak negatif
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
 
@@ -45,9 +37,22 @@ public class MazeTimer : MonoBehaviour
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    // Fungsi ini bisa dipanggil dari skrip lain untuk memulai timer
+    // Fungsi untuk memulai timer (dipanggil oleh trigger di awal maze)
     public void StartTimer()
     {
         timerIsRunning = true;
+    }
+
+    // --- FUNGSI BARU UNTUK MENGHENTIKAN TIMER ---
+    // Fungsi ini akan dipanggil oleh trigger di garis finis
+    public void StopTimer()
+    {
+        if (timerIsRunning)
+        {
+            timerIsRunning = false;
+            Debug.Log("MAZE SELESAI! Waktu berhenti di: " + timerText.text);
+
+            // Di sini nanti Anda akan memanggil UI Endgame
+        }
     }
 }

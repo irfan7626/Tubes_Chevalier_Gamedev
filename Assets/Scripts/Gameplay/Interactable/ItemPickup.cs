@@ -30,15 +30,27 @@ public class ItemPickup : MonoBehaviour
     void TryPickupItem()
     {
         RaycastHit hit;
+        // Tembakkan "laser" dari tengah kamera ke depan
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, pickupRange))
         {
+            // --- BAGIAN BARU: Cek apakah yang dilihat adalah papan yang bisa dihancurkan ---
+            BreakableObject breakable = hit.transform.GetComponent<BreakableObject>();
+            if (breakable != null)
+            {
+                // Jika ya, panggil fungsi untuk mencoba menghancurkannya
+                breakable.AttemptToBreak();
+                return; // Hentikan fungsi di sini agar tidak mencoba pickup item lain
+            }
+            // --------------------------------------------------------------------------
+
+            // Kode lama Anda untuk pickup kunci (sudah benar)
             KeyItem key = hit.transform.GetComponent<KeyItem>();
             if (key != null)
             {
-                // --- PERUBAHAN: Memanggil AddKey dengan keyIcon ---
                 InventoryManager.Instance.AddKey(key.keyID, key.keyIcon);
                 Destroy(hit.transform.gameObject);
             }
+            // Kode lama Anda untuk memegang objek fisik (sudah benar)
             else if (hit.transform.CompareTag("Pickup"))
             {
                 heldItem = hit.transform.gameObject;

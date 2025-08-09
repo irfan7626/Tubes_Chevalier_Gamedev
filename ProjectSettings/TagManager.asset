@@ -8,6 +8,7 @@ TagManager:
   - PuzzleItem
   - Interactable
   - Ladder
+  - FinishLine
   layers:
   - Default
   - TransparentFX

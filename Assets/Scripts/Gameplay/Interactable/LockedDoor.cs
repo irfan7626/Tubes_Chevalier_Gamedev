@@ -1,14 +1,15 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class LockedDoor : MonoBehaviour
 {
     [Header("Door Models")]
-    public GameObject doorClosed; // Model pintu tertutup
-    public GameObject doorOpened; // Model pintu terbuka
+    public GameObject doorClosed;
+    public GameObject doorOpened;
 
     [Header("Lock Settings")]
-    public bool isLocked; // <-- CENTANG INI JIKA PINTU TERKUNCI
-    public string requiredKeyID; // ID kunci jika isLocked = true
+    public bool isLocked;
+    public List<string> requiredKeyIDs = new List<string>();
 
     [Header("UI & Sound")]
     public GameObject interactionUI;
@@ -21,48 +22,74 @@ public class LockedDoor : MonoBehaviour
     {
         if (isPlayerNear && !doorIsOpen && Input.GetKeyDown(KeyCode.E))
         {
-            // Cek apakah pintu ini tipenya terkunci
+            // --- INI TES PALING PENTING ---
+            Debug.Log("======================================");
+            Debug.Log("Tombol E Ditekan pada Pintu: " + gameObject.name);
+            Debug.Log("Status 'isLocked' di Inspector adalah: " + isLocked);
+            // ------------------------------------
+
             if (isLocked)
             {
-                // Jika terkunci, cek apakah pemain punya kunci
-                if (InventoryManager.Instance.HasKey(requiredKeyID))
+                if (CheckForAllKeys())
                 {
                     OpenDoor();
                 }
                 else
                 {
-                    Debug.Log("Pintu ini terkunci. Butuh kunci: " + requiredKeyID);
+                    Debug.Log("GAGAL: Kunci tidak lengkap.");
                 }
             }
             else
             {
-                // Jika tidak terkunci, langsung buka pintu
+                Debug.Log("Pintu ini tidak terkunci, membuka...");
                 OpenDoor();
             }
         }
+    }
+
+    private bool CheckForAllKeys()
+    {
+        // Jika tidak ada kunci yang dibutuhkan, anggap saja gagal.
+        if (requiredKeyIDs.Count == 0)
+        {
+            Debug.LogWarning("GAGAL: Daftar kunci yang dibutuhkan kosong!");
+            return false;
+        }
+
+        foreach (string keyID in requiredKeyIDs)
+        {
+            // Cek apakah inventory punya kunci ini
+            if (!InventoryManager.Instance.HasKey(keyID))
+            {
+                Debug.LogError("GAGAL: Kunci '" + keyID + "' TIDAK ADA di inventory!");
+                return false; // Langsung hentikan jika satu kunci saja tidak ada
+            }
+        }
+
+        Debug.Log("SUKSES: Semua kunci berhasil ditemukan!");
+        return true;
     }
 
     private void OpenDoor()
     {
         doorIsOpen = true;
 
-        // Hapus kunci dari inventory HANYA jika pintu tadinya terkunci
         if (isLocked)
         {
-            InventoryManager.Instance.RemoveKey(requiredKeyID);
+            foreach (string keyID in requiredKeyIDs)
+            {
+                InventoryManager.Instance.RemoveKey(keyID);
+            }
         }
-
-        // Logika lama Anda untuk menukar model pintu (sudah benar)
+        
         if (doorClosed != null) doorClosed.SetActive(false);
         if (doorOpened != null) doorOpened.SetActive(true);
         if (interactionUI != null) interactionUI.SetActive(false);
         if (openSound != null) openSound.Play();
 
-        // Nonaktifkan collider agar tidak bisa diinteraksi lagi
         GetComponent<Collider>().enabled = false;
     }
 
-    // Bagian OnTriggerEnter dan OnTriggerExit tetap sama seperti milik Anda
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))

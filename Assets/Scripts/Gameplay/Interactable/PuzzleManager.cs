@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class PuzzleManager : MonoBehaviour
 {
+    // --- VARIABEL BARU: Seret objek kunci yang ingin dimunculkan ke sini ---
+    public GameObject objectToRevealAfterSolve;
+
     private PuzzlePiece[] puzzlePieces;
     private bool puzzleSolved = false;
 
-    // OnEnable berjalan setiap kali UI puzzle ini muncul
     void OnEnable()
     {
         puzzleSolved = false;
@@ -39,8 +41,15 @@ public class PuzzleManager : MonoBehaviour
         puzzleSolved = true;
         Debug.Log("PUZZLE SELESAI!");
 
+        // --- BAGIAN BARU: Logika untuk memunculkan kunci ---
+        if (objectToRevealAfterSolve != null)
+        {
+            objectToRevealAfterSolve.SetActive(true); // Aktifkan objeknya
+            Debug.Log(objectToRevealAfterSolve.name + " telah muncul!");
+        }
+        // ----------------------------------------------------
+
         // 1. Sembunyikan kembali UI Puzzle
-        // gameObject merujuk ke PuzzleBoard itu sendiri
         gameObject.SetActive(false);
 
         // 2. Kunci dan sembunyikan kursor
