@@ -2,10 +2,22 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
+    [Header("Interaction Settings")]
     public float pickupRange = 3f;
     public Transform holdParent;
+
+    [Header("Audio Feedback")]
+    public AudioClip keyPickupSound; // Seret suara pickup kunci ke sini
+
     private GameObject heldItem;
     private Rigidbody heldItemRb;
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        // Dapatkan komponen AudioSource saat game dimulai
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -30,27 +42,32 @@ public class ItemPickup : MonoBehaviour
     void TryPickupItem()
     {
         RaycastHit hit;
-        // Tembakkan "laser" dari tengah kamera ke depan
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, pickupRange))
         {
-            // --- BAGIAN BARU: Cek apakah yang dilihat adalah papan yang bisa dihancurkan ---
+            // Cek untuk papan yang bisa dihancurkan
             BreakableObject breakable = hit.transform.GetComponent<BreakableObject>();
             if (breakable != null)
             {
-                // Jika ya, panggil fungsi untuk mencoba menghancurkannya
                 breakable.AttemptToBreak();
-                return; // Hentikan fungsi di sini agar tidak mencoba pickup item lain
+                return;
             }
-            // --------------------------------------------------------------------------
 
-            // Kode lama Anda untuk pickup kunci (sudah benar)
+            // Cek untuk kunci
             KeyItem key = hit.transform.GetComponent<KeyItem>();
             if (key != null)
             {
+                // --- BAGIAN BARU: Mainkan suara pickup ---
+                if (keyPickupSound != null && audioSource != null)
+                {
+                    audioSource.PlayOneShot(keyPickupSound);
+                }
+                // ----------------------------------------
+
+                // Tambahkan kunci ke inventory dan hancurkan objeknya
                 InventoryManager.Instance.AddKey(key.keyID, key.keyIcon);
                 Destroy(hit.transform.gameObject);
             }
-            // Kode lama Anda untuk memegang objek fisik (sudah benar)
+            // Cek untuk objek fisik lain yang bisa dipegang
             else if (hit.transform.CompareTag("Pickup"))
             {
                 heldItem = hit.transform.gameObject;
@@ -70,7 +87,6 @@ public class ItemPickup : MonoBehaviour
 
     void DropItem()
     {
-        // --- PERUBAHAN: Logika untuk menghapus kunci saat dijatuhkan ---
         if (heldItem != null)
         {
             KeyItem key = heldItem.GetComponent<KeyItem>();

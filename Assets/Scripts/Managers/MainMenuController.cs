@@ -5,13 +5,13 @@ using UnityEngine.Audio;         // Diperlukan untuk Audio Mixer
 public class MainMenuController : MonoBehaviour
 {
     public GameObject settingsPanel;
-    public AudioMixer audioMixer; // Kita akan buat ini nanti
+    public AudioMixer audioMixer;
 
     // Fungsi untuk tombol START
     public void StartGame()
     {
-        // Ganti "NamaSceneGameUtama" dengan nama scene game Anda
-        SceneManager.LoadScene("MainMenu"); 
+        // Langsung memuat scene game utama Anda
+        SceneManager.LoadScene("MainScene"); 
     }
 
     // Fungsi untuk tombol QUIT

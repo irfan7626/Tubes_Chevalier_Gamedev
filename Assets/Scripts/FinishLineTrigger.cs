@@ -1,33 +1,44 @@
 using UnityEngine;
 
- public class FinishLineTrigger : MonoBehaviour
- {
-     public MazeTimer mazeTimerScript;
-     private Playermovement2 playerMovementScript; // Asumsi nama skrip pergerakan pemain
+public class FinishLineTrigger : MonoBehaviour
+{
+    // Seret objek 'TimerManager' (yang punya skrip MazeTimer) ke sini
+    public MazeTimer mazeTimerScript;
 
-     private void OnTriggerEnter(Collider other)
-     {
-         if (other.CompareTag("Player"))
-         {
-             // Hentikan timer
-             if (mazeTimerScript != null)
-             {
-                 mazeTimerScript.StopTimer();
-             }
+    // Seret objek 'EndGamePanel' dari UI Anda ke sini
+    public GameObject endGamePanel;
 
-             // Nonaktifkan pergerakan pemain
-             playerMovementScript = other.GetComponent<Playermovement2>();
-             if (playerMovementScript != null)
-             {
-                 playerMovementScript.enabled = false;
-             }
-             else
-             {
-                 Debug.LogWarning("Skrip Playermovement2 tidak ditemukan pada player!");
-             }
+    private void OnTriggerEnter(Collider other)
+    {
+        // Cek jika yang masuk adalah Player
+        if (other.CompareTag("Player"))
+        {
+            // 1. Hentikan Timer
+            if (mazeTimerScript != null)
+            {
+                mazeTimerScript.StopTimer();
+            }
 
-             // Nonaktifkan trigger ini
-             gameObject.SetActive(false);
-         }
-     }
- }
+            // 2. Hentikan Gerakan Pemain
+            // Ganti "Playermovement2" jika nama skrip gerakan Anda berbeda
+            Playermovement2 playerMovement = other.GetComponent<Playermovement2>();
+            if (playerMovement != null)
+            {
+                playerMovement.enabled = false;
+            }
+
+            // 3. Tampilkan Panel "The End"
+            if (endGamePanel != null)
+            {
+                endGamePanel.SetActive(true);
+            }
+            
+            // 4. Bebaskan dan tampilkan kursor
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // 5. Nonaktifkan trigger ini agar tidak berjalan lagi
+            gameObject.SetActive(false);
+        }
+    }
+}

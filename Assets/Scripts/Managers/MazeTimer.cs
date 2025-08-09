@@ -1,12 +1,23 @@
 using UnityEngine;
-using TMPro; // Jangan lupa tambahkan ini jika memakai TextMeshPro
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class MazeTimer : MonoBehaviour
 {
-    public float timeRemaining = 180; // Waktu dalam detik
+    [Header("Timer Settings")]
+    public float timeRemaining = 180;
     public bool timerIsRunning = false;
+    public TMP_Text timerText;
 
-    public TMP_Text timerText; // Seret objek UI Text-mu ke sini di Inspector
+    [Header("Audio Settings")]
+    public AudioClip pantingSound;   // Suara ngos-ngosan yang berulang
+    public AudioClip jumpscareSound; // Suara jumpscare (satu kali)
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -19,32 +30,48 @@ public class MazeTimer : MonoBehaviour
             }
             else
             {
-                Debug.Log("Waktu Habis!");
+                Debug.Log("Waktu Habis! Me-restart level...");
                 timeRemaining = 0;
                 timerIsRunning = false;
-                // Di sini Anda bisa memanggil fungsi Game Over
+                
+                if (audioSource != null) audioSource.Stop();
+
+                string currentSceneName = SceneManager.GetActiveScene().name;
+                SceneManager.LoadScene(currentSceneName);
             }
         }
     }
 
     void DisplayTime(float timeToDisplay)
     {
-        timeToDisplay = Mathf.Max(0, timeToDisplay); // Pastikan waktu tidak negatif
+        timeToDisplay = Mathf.Max(0, timeToDisplay);
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-
-        // Format string agar selalu jadi 00:00
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    // Fungsi untuk memulai timer (dipanggil oleh trigger di awal maze)
     public void StartTimer()
     {
         timerIsRunning = true;
+
+        if (audioSource != null)
+        {
+            // --- BAGIAN BARU: Mainkan suara jumpscare satu kali ---
+            if (jumpscareSound != null)
+            {
+                audioSource.PlayOneShot(jumpscareSound);
+            }
+            // ----------------------------------------------------
+
+            // Mainkan suara ngos-ngosan secara berulang
+            if (pantingSound != null)
+            {
+                audioSource.clip = pantingSound;
+                audioSource.Play();
+            }
+        }
     }
 
-    // --- FUNGSI BARU UNTUK MENGHENTIKAN TIMER ---
-    // Fungsi ini akan dipanggil oleh trigger di garis finis
     public void StopTimer()
     {
         if (timerIsRunning)
@@ -52,7 +79,7 @@ public class MazeTimer : MonoBehaviour
             timerIsRunning = false;
             Debug.Log("MAZE SELESAI! Waktu berhenti di: " + timerText.text);
 
-            // Di sini nanti Anda akan memanggil UI Endgame
+            if (audioSource != null) audioSource.Stop();
         }
     }
 }

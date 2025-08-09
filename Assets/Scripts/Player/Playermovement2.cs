@@ -27,10 +27,14 @@ public class Playermovement2 : MonoBehaviour
     public Vector3 cameraCrouchPos;
     private bool isCrouching = false;
 
-    // --- VARIABEL BARU UNTUK TANGGA ---
+    // Variabel Tangga (Tidak Diubah)
     public float climbSpeed = 5f;
     private bool onLadder = false;
-    // ------------------------------------
+
+    // --- VARIABEL BARU UNTUK SUARA LANGKAH KAKI ---
+    public AudioClip footstepSound;
+    private AudioSource audioSource;
+    // ---------------------------------------------
 
     void Start()
     {
@@ -39,24 +43,27 @@ public class Playermovement2 : MonoBehaviour
         Cursor.visible = false;
         cameraStandingPos = playerCamera.transform.localPosition;
         cameraCrouchPos = cameraStandingPos - new Vector3(0, 0.5f, 0);
+
+        // --- TAMBAHAN: Dapatkan komponen AudioSource dan siapkan klipnya ---
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.clip = footstepSound;
+        }
+        // -----------------------------------------------------------------
     }
 
     void Update()
     {
-        // === BAGIAN BARU: Cek apakah sedang di tangga ===
         if (onLadder)
         {
-            // Jika di tangga, jalankan logika memanjat
             HandleLadderMovement();
         }
         else
         {
-            // Jika tidak, jalankan logika gerakan normal
             HandleNormalMovement();
         }
-        // ===============================================
 
-        // Rotasi kamera dan pemain tetap berjalan di kedua mode
         if (canMove)
         {
             rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
@@ -64,24 +71,45 @@ public class Playermovement2 : MonoBehaviour
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
         }
-    }
-    
-    // === FUNGSI BARU: Untuk logika memanjat tangga ===
-    void HandleLadderMovement()
-    {
-        // Hentikan gravitasi saat di tangga
-        moveDirection = Vector3.zero;
 
-        // Ambil input vertikal (W/S) untuk naik/turun
+        // --- TAMBAHAN: Panggil fungsi untuk mengelola suara langkah kaki ---
+        HandleFootstepSounds();
+        // -------------------------------------------------------------
+    }
+
+    // --- FUNGSI BARU: Untuk mengelola suara langkah kaki ---
+    void HandleFootstepSounds()
+    {
+        // Cek apakah pemain di darat, sedang bergerak, dan tidak di tangga
+        bool isMovingOnGround = characterController.isGrounded && !onLadder && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0);
+
+        if (isMovingOnGround && canMove)
+        {
+            // Jika audio belum diputar, putar sekarang
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            // Jika pemain diam, di udara, atau di tangga, hentikan suara
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+        }
+    }
+    // ------------------------------------------------------
+
+    void HandleLadderMovement() // Fungsi ini tidak diubah
+    {
+        moveDirection = Vector3.zero;
         float verticalInput = Input.GetAxis("Vertical");
-        
-        // Gerakkan controller ke atas atau ke bawah
         characterController.Move(transform.up * verticalInput * climbSpeed * Time.deltaTime);
     }
-    // ===============================================
 
-    // === KODE LAMA ANDA: Dibungkus dalam satu fungsi agar rapi ===
-    void HandleNormalMovement()
+    void HandleNormalMovement() // Fungsi ini tidak diubah
     {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
@@ -109,10 +137,8 @@ public class Playermovement2 : MonoBehaviour
         }
 
         characterController.Move(moveDirection * Time.deltaTime);
-
         HandleCrouch();
     }
-    // ==========================================================
 
     void HandleCrouch() // Fungsi ini tidak diubah
     {
@@ -131,8 +157,7 @@ public class Playermovement2 : MonoBehaviour
         }
     }
 
-    // --- FUNGSI BARU: Untuk mendeteksi kapan pemain menyentuh trigger tangga ---
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) // Fungsi ini tidak diubah
     {
         if (other.CompareTag("Ladder"))
         {
@@ -140,12 +165,11 @@ public class Playermovement2 : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other) // Fungsi ini tidak diubah
     {
         if (other.CompareTag("Ladder"))
         {
             onLadder = false;
         }
     }
-    // -------------------------------------------------------------------------
 }
